@@ -11,11 +11,8 @@ COPY Pipfile Pipfile.lock /app/
 RUN pip install torch --index-url https://download.pytorch.org/whl/cpu && pipenv install --deploy --system
 
 COPY . .
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN rm -f .secrets.toml
-
-RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENV ENV_FOR_DYNACONF="default"
 

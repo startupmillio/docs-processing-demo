@@ -17,7 +17,7 @@ class TranscriptionResult(BaseModel):
 
 class TranscriptionRequest(BaseModel):
     s3_key: str
-    meeting_id: Optional[str]
+    meeting_id: Optional[str] = None
 
 
 class TranscriptionTaskStatus(BaseModel):
