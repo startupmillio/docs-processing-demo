@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Transcription (Raw PCM)</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+    }
+    #final-log {
+      background: #f4f4f4;
+      padding: 1rem;
+      border-radius: 8px;
+      min-height: 150px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+    #live-line {
+      font-weight: bold;
+      color: #333;
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-right: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎙️ Live Transcription (Raw PCM)</h1>
+  <div id="final-log"></div>
+  <div id="live-line">[waiting for audio...]</div>
+  <button id="start-btn">Start Transcription</button>
+  <button id="stop-btn">Stop Transcription</button>
+
+  <script>
+    let socket;
+    let audioContext;
+    let processor;
+    let input;
+    let mediaStream;
+
+    const finalLog = document.getElementById("final-log");
+    const liveLine = document.getElementById("live-line");
+    const startBtn = document.getElementById("start-btn");
+    const stopBtn = document.getElementById("stop-btn");
+
+    function floatTo16BitPCM(float32Array) {
+      const buffer = new ArrayBuffer(float32Array.length * 2);
+      const view = new DataView(buffer);
+      for (let i = 0; i < float32Array.length; i++) {
+        let s = Math.max(-1, Math.min(1, float32Array[i]));
+        view.setInt16(i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+      return new Uint8Array(buffer);
+    }
+
+    function getCookieValue(name) {
+      const match = document.cookie.match(new RegExp('(^|;\\s*)' + name + '=([^;]*)'));
+      return match ? decodeURIComponent(match[2]) : null;
+    }
+
+
+    startBtn.onclick = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const meetingId = params.get("meeting_id") || "default-meeting";
+      const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+      const wsUrl = `${wsScheme}://${window.location.host}/ws/live/${meetingId}`;
+      socket = new WebSocket(wsUrl);
+
+
+      socket.onopen = function () {
+        const token = getCookieValue('session');
+        console.log(token)
+        if (token) {
+          socket.send(JSON.stringify({ type: 'init', token: token }));
+        } else {
+          console.warn('Session not found!!!');
+        }
+      };
+
+      socket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if (data.type === "final") {
+          const p = document.createElement("p");
+          p.textContent = data.text;
+          finalLog.appendChild(p);
+          liveLine.textContent = "";
+        } else if (data.type === "partial") {
+          liveLine.textContent = data.text;
+        } else if (data.type === "speaker-final") {
+          const p = document.createElement("p");
+          p.textContent = `${data.speaker}: ${data.text}`;
+          p.style.fontWeight = "bold";
+          finalLog.appendChild(p);
+        }
+      };
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+      mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      input = audioContext.createMediaStreamSource(mediaStream);
+      processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+      processor.onaudioprocess = (e) => {
+        const pcmChunk = floatTo16BitPCM(e.inputBuffer.getChannelData(0));
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(pcmChunk);
+        }
+      };
+
+      input.connect(processor);
+      processor.connect(audioContext.destination);
+    };
+
+    stopBtn.onclick = () => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close(1000, "User ended session");
+        console.log("[client] WebSocket closed manually.");
+      }
+      if (processor) processor.disconnect();
+      if (input) input.disconnect();
+      if (audioContext) audioContext.close();
+      if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+    };
+  </script>
+</body>
+</html>

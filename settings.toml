@@ -1,0 +1,23 @@
+[default]
+    DATABASE_PORT = "5432"
+    DATABASE_USER = "postgres"
+    DATABASE_DB = "audio_proc"
+    DATABASE_PASSWORD = "postgres"
+    DATABASE_HOST = "postgres"
+
+    AWS_REGION = ""
+    S3_BUCKET = ""
+
+    LOG_TO_SENTRY = true
+
+    OPENAI_API_KEY = ''
+    API_URL = ''
+    AUTH_SECRET = ""
+
+    AUTH0_DOMAIN = ""
+    AUTH0_CLIENT_ID = ""
+    AUTH0_CLIENT_SECRET = ""
+
+[global]
+    PROJECT_NAME = 'Audio-processing-demo'
+    SENTRY_URL = "https://a87df636768448f6f614916486732700@o4509101214203904.ingest.de.sentry.io/4509101217480784"

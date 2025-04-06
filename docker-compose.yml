@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    image: processing_app
+    platform: linux/amd64
+    container_name: processing_app_container
+    ports:
+      - "8000:8000"
+    environment:
+      ENV_FOR_DYNACONF: "default"
+    depends_on:
+      - redis
+      - postgres
+
+  redis:
+    image: redis:7
+
+  postgres:
+    container_name: "postgres"
+    image: postgres:16.4
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      DYNACONF_POSTGRES_USER: "postgres"
+      DYNACONF_POSTGRES_PASSWORD: "postgres"
+      DYNACONF_POSTGRES_DB: "audio_proc"
+      DYNACONF_BROKER_URL: "redis://redis:6379/0"
+
+  celery:
+    build: .
+    image: celery_processing_app
+    platform: linux/amd64
+    container_name: celery_task_container
+    command: celery -A tasks.transcribe_audio worker --loglevel=info
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      ENV_FOR_DYNACONF: "default"
+      DYNACONF_BROKER_URL: "redis://redis:6379/0"
+      DYNACONF_POSTGRES_USER: "postgres"
+      DYNACONF_POSTGRES_PASSWORD: "postgres"
+      DYNACONF_POSTGRES_DB: "audio_proc"
+
+
+volumes:
+  pgdata:

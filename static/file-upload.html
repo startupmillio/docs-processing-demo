@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Audio to S3</title>
+</head>
+<body>
+  <h2>Upload Audio File (max 100MB)</h2>
+  <input type="file" id="fileInput" accept="audio/*"/>
+  <button onclick="uploadFile()">Upload</button>
+  <p id="status"></p>
+
+  <script>
+    const MAX_SIZE_MB = 100;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+    async function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const status = document.getElementById('status');
+
+      if (!fileInput.files.length) {
+        status.textContent = "Please select a file.";
+        return;
+      }
+
+      const file = fileInput.files[0];
+
+      if (file.size > MAX_SIZE_BYTES) {
+        status.textContent = `File is too large. Max size is ${MAX_SIZE_MB}MB.`;
+        return;
+      }
+
+      status.textContent = "Requesting upload URL...";
+
+      try {
+          const response = await fetch(`/upload/generate-presigned-url?content_type=${encodeURIComponent(file.type)}`, {
+            method: 'GET',
+            credentials: 'same-origin'
+          });
+
+        if (!response.ok) {
+          throw new Error("Failed to get presigned URL");
+        }
+
+        const { url, s3_key } = await response.json();
+
+      status.textContent = "Uploading...";
+
+      const uploadResponse = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type
+        },
+        body: file
+      });
+
+      if (uploadResponse.ok) {
+        status.textContent = `Upload successful! S3 key: ${s3_key}`;
+        console.log("Uploaded key:", s3_key);
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      console.error(error);
+      status.textContent = "Error: " + error.message;
+    }
+  }
+  </script>
+</body>
+</html>
