@@ -1,0 +1,28 @@
+# Ignore the .secrets.toml file
+.secrets.toml
+
+# Ignore Python cache files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment directories
+venv/
+.env/
+
+# Ignore Dockerfile itself (optional)
+Dockerfile
+
+# Ignore any local test files or directories
+*.log
+*.tmp
+*.bak
+
+# Ignore IDE configurations (if using VSCode, PyCharm, etc.)
+.vscode/
+.idea/
+
+# Ignore any other files that should not be copied into the container
+*.md
+*.rst

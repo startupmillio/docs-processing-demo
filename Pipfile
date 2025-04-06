@@ -1,0 +1,37 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+scipy = "*"
+numpy = "*"
+vosk = "*"
+sounddevice = "*"
+fastapi = "*"
+uvicorn = "*"
+SQLAlchemy = { extras = ["asyncio"]  }
+alembic = "*"
+asyncpg = "*"
+scikit-learn = "*"
+resemblyzer = "*"
+dynaconf = "*"
+aioboto3 = "*"
+httpx = "*"
+python-multipart = "*"
+celery = "*"
+ffmpeg = "*"
+langchain = "*"
+openai = "*"
+langgraph = "*"
+psycopg2 = "*"
+redis = "*"
+authlib = "*"
+itsdangerous = "*"
+tiktoken = "*"
+aiocache = "*"
+sentry-sdk = {extras = ["fastapi"], version = "*"}
+python-jose = "*"
+
+[dev-packages]
+black = "*"
