@@ -67,6 +67,11 @@ Logout when done:
 - **Speaker Recognition** — Not just what was said, but *who* said it
 - **Multilanguage Support**
 - **Switch to Whisper** — Test Whisper for file-based transcription, compare results
+- **Fine-tuned Summarization Agent** — Current summary is generated via a LangGraph agent using a single tool. Improvements can include:
+  - Action/Topic/Tag Extraction
+  - Multilanguage Support via LangChain tools
+- **WebRTC Support** — Enable in-browser audio capture for a smoother real-time experience
+"""
 - **GPU Acceleration** — Evaluate performance vs. cost
 - **Explore Alternatives** — Investigate other open-source solutions for real-time speech recognition
 - **Vosk Enhancements** — Improve text output with configs (inspired by [nerd-dictation](https://github.com/ideasman42/nerd-dictation))
