@@ -6,17 +6,22 @@
     DATABASE_HOST = "postgres"
 
     AWS_REGION = ""
-    S3_BUCKET = ""
+    AWS_S3_BUCKET = ""
+    ACCESS_KEY_ID = ""
+    ACCESS_SECRET_KEY = ""
+
+    API_URL = ""
 
     LOG_TO_SENTRY = true
 
-    OPENAI_API_KEY = ''
-    API_URL = ''
-    AUTH_SECRET = ""
+    OPENAI_API_KEY = ""
+    AUTH_SECRET = "some-secret"
 
     AUTH0_DOMAIN = ""
     AUTH0_CLIENT_ID = ""
     AUTH0_CLIENT_SECRET = ""
+
+    BROKER_URL = "redis://redis:6379/0"
 
 [global]
     PROJECT_NAME = 'Audio-processing-demo'

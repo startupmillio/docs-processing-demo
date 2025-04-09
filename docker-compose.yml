@@ -24,11 +24,6 @@ services:
       - ./data/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    environment:
-      DYNACONF_POSTGRES_USER: "postgres"
-      DYNACONF_POSTGRES_PASSWORD: "postgres"
-      DYNACONF_POSTGRES_DB: "audio_proc"
-      DYNACONF_BROKER_URL: "redis://redis:6379/0"
 
   celery:
     build: .
@@ -39,13 +34,6 @@ services:
     depends_on:
       - redis
       - postgres
-    environment:
-      ENV_FOR_DYNACONF: "default"
-      DYNACONF_BROKER_URL: "redis://redis:6379/0"
-      DYNACONF_POSTGRES_USER: "postgres"
-      DYNACONF_POSTGRES_PASSWORD: "postgres"
-      DYNACONF_POSTGRES_DB: "audio_proc"
-
 
 volumes:
   pgdata:
