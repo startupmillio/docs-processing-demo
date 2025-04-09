@@ -61,6 +61,45 @@ Logout when done:
 
 ---
 
+## Setting up
+
+### Prerequisites
+
+Before proceeding, ensure you have the following tools installed and configured:
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [AWS access keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
+- [OpenAi ApiKey](https://platform.openai.com/api-keys)
+- [Postgresql](https://www.postgresql.org/) (to run locally)
+- [Redis](https://redis.io/) (to run locally)
+
+### Auth0 App settings
+1. Go to Auth0 official site and login there
+2. Go to the `Applications` tab, `+Create Application` button, choose Regular Web Application. Create one
+3. Go to `Settings`. here you'll see your `AUTH0_DOMAIN_NAME`, `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`. 
+4. In the `Application URIs` section in `Allowed Callback URLs` paste `{ur_domain_name}/auth/callback`, in `Allowed LoaOur URLs` -> `{ur_domain_name}/auth/login`
+5. Scroll down to `Advanced settings`. There go to `Grant Types` and add `Authorization code` option
+6. Save
+7. Go to the `APIs` tab, `+Create API` button, `Identifier` -> `URL_DOMAIN_NAME` -> Save
+
+### Running the app locally
+
+1. Setup a virtualenv using python3.11
+2. pip install pipenv
+3. pipenv install
+4. copy `.secrets.toml.example` as `.secrets.toml` and replace placeholders with your variables
+5. `alembic upgrade head`
+6. `python -m main.py`
+7. `celery -A tasks.transcribe_audio worker --loglevel=info`
+8. `localhost:8000/docs`
+
+### Running as docker-compose 
+1. in `settings.toml` replace empty values in the [default] section with your variables
+2. `docker-compose up --build`
+3. `localhost:8000/docs`
+
+
 ## 🚀 Future Improvements
 
 - **Tests!!!**
